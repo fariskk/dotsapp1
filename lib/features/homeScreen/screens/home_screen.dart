@@ -1,36 +1,14 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formapplication/coommon/common_widgets.dart';
-import 'package:formapplication/features/homeScreen/bloc/form_bloc_bloc.dart';
 import 'package:formapplication/features/homeScreen/provider/home_screen_provider.dart';
-import 'package:formapplication/features/homeScreen/screens/success_screen.dart';
 import 'package:formapplication/features/homeScreen/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  List<String> dropitems = [
-    "Leave Application",
-    "Docment Request",
-    "Accound Opening-Bank Letter",
-    "Resignation Letter",
-  ];
-  String radioResult = "individual";
-  String dropdownSerchFielHint = "-Select Requset Type-";
-  String? requestType;
-  DateTime? date;
-  FilePickerResult? file;
-  TextEditingController behalfController = TextEditingController();
-  TextEditingController reQuestTypeController = TextEditingController();
-  TextEditingController subFeild1Controller = TextEditingController();
-  TextEditingController subFeild2Controller = TextEditingController();
-  TextEditingController purposeController = TextEditingController();
-  TextEditingController remarksController = TextEditingController();
-
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,66 +39,7 @@ class HomeScreen extends StatelessWidget {
                   labelPadding: EdgeInsets.zero,
                   dividerColor: Colors.white,
                   indicatorColor: Colors.transparent,
-                  tabs: [
-                    GestureDetector(
-                      onTap: () {
-                        provider.radioResult = "individual";
-                        context
-                            .read<FormBlocBloc>()
-                            .add(RadioButtonClickedEvent());
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        height: 50,
-                        width: MediaQuery.of(context).size.width / 2,
-                        decoration: BoxDecoration(
-                            color: radioResult == "individual"
-                                ? Colors.white
-                                : Theme.of(context).primaryColor,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20))),
-                        child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: myText(
-                              text: "Individual",
-                              size: 18,
-                              color: radioResult == "individual"
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.white,
-                            )),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        radioResult = "on behalf";
-                        context
-                            .read<FormBlocBloc>()
-                            .add(RadioButtonClickedEvent());
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        height: 50,
-                        width: MediaQuery.of(context).size.width / 2,
-                        decoration: BoxDecoration(
-                            color: radioResult == "individual"
-                                ? Theme.of(context).primaryColor
-                                : Colors.white,
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20))),
-                        child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: myText(
-                              text: "On Behalf Of",
-                              size: 18,
-                              color: radioResult == "individual"
-                                  ? Colors.white
-                                  : Theme.of(context).primaryColor,
-                            )),
-                      ),
-                    ),
-                  ]),
+                  tabs: myTabs(context)),
             ),
             backgroundColor: Colors.white,
             body: SafeArea(
@@ -134,22 +53,23 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Visibility(
-                        visible: radioResult == "on behalf" ? true : false,
+                        visible:
+                            provider.radioResult == "on behalf" ? true : false,
                         child: Column(
                           children: [
                             mySpacer(height: 20),
                             myTextField(
                                 hintText: "Behalf of",
-                                controller: behalfController),
+                                controller: provider.behalfController),
                           ],
                         ),
                       ),
                       mySpacer(height: 20),
-                      Container(
+                      SizedBox(
                         height: 55,
                         child: DropDownSearchField(
                           textFieldConfiguration: TextFieldConfiguration(
-                            controller: reQuestTypeController,
+                            controller: provider.reQuestTypeController,
                             decoration: InputDecoration(
                                 labelText: "Select Requset Type",
                                 floatingLabelBehavior:
@@ -159,18 +79,18 @@ class HomeScreen extends StatelessWidget {
                                 suffixIcon: const Icon(
                                     Icons.keyboard_arrow_down_rounded),
                                 border: const OutlineInputBorder(),
-                                hintText: dropdownSerchFielHint,
+                                hintText: provider.dropdownSerchFielHint,
                                 hintStyle: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.normal,
-                                    color: dropdownSerchFielHint ==
+                                    color: provider.dropdownSerchFielHint ==
                                             "-Select Requset Type-"
                                         ? Colors.grey
                                         : Colors.black)),
                           ),
                           displayAllSuggestionWhenTap: true,
                           suggestionsCallback: (String pattern) {
-                            return dropitems.where((element) => element
+                            return provider.dropitems.where((element) => element
                                 .toUpperCase()
                                 .contains(pattern.toUpperCase()));
                           },
@@ -185,13 +105,13 @@ class HomeScreen extends StatelessWidget {
                             );
                           },
                           onSuggestionSelected: (Object? suggestion) {
-                            dropdownSerchFielHint = suggestion.toString();
+                            provider.dropdownSerchFielHint =
+                                suggestion.toString();
 
-                            reQuestTypeController.text = suggestion.toString();
-                            requestType = suggestion.toString();
-                            context
-                                .read<FormBlocBloc>()
-                                .add(DropDownButtonClickedEvent());
+                            provider.reQuestTypeController.text =
+                                suggestion.toString();
+                            provider.requestType = suggestion.toString();
+                            provider.rebuild();
                           },
                         ),
                       ),
@@ -200,13 +120,13 @@ class HomeScreen extends StatelessWidget {
                       mySpacer(height: 20),
 
                       Builder(builder: (context) {
-                        switch (requestType) {
+                        switch (provider.requestType) {
                           case "Docment Request":
                             return Column(
                               children: [
                                 myTextField(
                                     hintText: "Document Name",
-                                    controller: subFeild1Controller),
+                                    controller: provider.subFeild1Controller),
                                 mySpacer(height: 20),
                               ],
                             );
@@ -215,11 +135,11 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 myTextField(
                                     hintText: "Name of the Institustion",
-                                    controller: subFeild1Controller),
+                                    controller: provider.subFeild1Controller),
                                 mySpacer(height: 20),
                                 myTextField(
                                     hintText: "Address of the Institustion",
-                                    controller: subFeild2Controller),
+                                    controller: provider.subFeild2Controller),
                                 mySpacer(height: 20),
                               ],
                             );
@@ -240,11 +160,9 @@ class HomeScreen extends StatelessWidget {
                                   MediaQuery.of(context).size.width - 80,
                                   MediaQuery.of(context).size.width - 80));
                           if (res != null) {
-                            date = res[0];
+                            provider.date = res[0];
 
-                            context
-                                .read<FormBlocBloc>()
-                                .add(CalenderButtonClickedEvent());
+                            provider.rebuild();
                           }
                         },
                         child: SizedBox(
@@ -270,11 +188,11 @@ class HomeScreen extends StatelessWidget {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       myText(
-                                          text: date == null
+                                          text: provider.date == null
                                               ? "-Select Required Date-"
-                                              : "${date!.day}/${date!.month}/${date!.year}",
+                                              : "${provider.date!.day}/${provider.date!.month}/${provider.date!.year}",
                                           size: 18,
-                                          color: date == null
+                                          color: provider.date == null
                                               ? const Color.fromARGB(
                                                   255, 182, 182, 182)
                                               : Colors.black,
@@ -300,7 +218,8 @@ class HomeScreen extends StatelessWidget {
                       mySpacer(height: 20),
                       // textarea 3
                       myTextField(
-                          hintText: "Purpose", controller: purposeController),
+                          hintText: "Purpose",
+                          controller: provider.purposeController),
                       mySpacer(height: 20),
                       Row(
                         children: [
@@ -314,15 +233,13 @@ class HomeScreen extends StatelessWidget {
                       mySpacer(height: 20),
 
                       //file picker section
-                      file == null
+                      provider.file == null
                           ? GestureDetector(
                               onTap: () async {
                                 var res = await FilePicker.platform.pickFiles();
                                 if (res != null) {
-                                  file = res;
-                                  context
-                                      .read<FormBlocBloc>()
-                                      .add(DropDownButtonClickedEvent());
+                                  provider.file = res;
+                                  provider.rebuild();
                                 }
                               },
                               child: Container(
@@ -345,13 +262,17 @@ class HomeScreen extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  myText(text: file!.files[0].name, size: 18),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 1.5,
+                                    child: myText(
+                                        text: provider.file!.files[0].name,
+                                        size: 18),
+                                  ),
                                   IconButton(
                                       onPressed: () {
-                                        file = null;
-                                        context
-                                            .read<FormBlocBloc>()
-                                            .add(DropDownButtonClickedEvent());
+                                        provider.file = null;
+                                        provider.rebuild();
                                       },
                                       icon: Icon(
                                         Icons.cancel,
@@ -362,22 +283,19 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                       mySpacer(height: 20),
-                      Container(
-                        child: TextField(
-                          controller: remarksController,
-                          minLines: 2,
-                          maxLines: 3,
-                          decoration: const InputDecoration(
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              hintText: "Remarks",
-                              labelText: "Remarks",
-                              labelStyle: const TextStyle(
-                                  fontSize: 18, color: Colors.grey),
-                              border: OutlineInputBorder(),
-                              hintStyle:
-                                  TextStyle(fontSize: 18, color: Colors.grey)),
-                        ),
+                      TextField(
+                        controller: provider.remarksController,
+                        minLines: 2,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            hintText: "Remarks",
+                            labelText: "Remarks",
+                            labelStyle:
+                                TextStyle(fontSize: 18, color: Colors.grey),
+                            border: OutlineInputBorder(),
+                            hintStyle:
+                                TextStyle(fontSize: 18, color: Colors.grey)),
                       ),
                       mySpacer(height: 20),
                       // submit section
@@ -386,20 +304,7 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              radioResult = "individual";
-                              dropdownSerchFielHint = "-Select Requset Type-";
-                              requestType = null;
-                              date = null;
-                              file = null;
-                              behalfController.clear();
-                              subFeild1Controller.clear();
-                              subFeild2Controller.clear();
-                              purposeController.clear();
-                              reQuestTypeController.clear();
-                              remarksController.clear();
-                              context
-                                  .read<FormBlocBloc>()
-                                  .add(RadioButtonClickedEvent());
+                              provider.clearForm();
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width / 2 - 40,
@@ -418,17 +323,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           GestureDetector(
                             onTap: () {
-                              context.read<FormBlocBloc>().add(
-                                  SubmitButtonClickedEvent(
-                                      selectedType: radioResult,
-                                      date: date,
-                                      file: file,
-                                      behalfController: behalfController.text,
-                                      purpose: purposeController.text,
-                                      remark: remarksController.text,
-                                      requestType: requestType,
-                                      subText1: subFeild1Controller.text,
-                                      subText2: subFeild2Controller.text));
+                              provider.submit(context);
                             },
                             child: Container(
                               width: MediaQuery.of(context).size.width / 2 - 40,
