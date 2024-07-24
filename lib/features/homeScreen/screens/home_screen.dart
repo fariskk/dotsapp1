@@ -1,24 +1,30 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:drop_down_search_field/drop_down_search_field.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formapplication/coommon/common_widgets.dart';
 import 'package:formapplication/features/homeScreen/bloc/form_bloc_bloc.dart';
+import 'package:formapplication/features/homeScreen/provider/home_screen_provider.dart';
 import 'package:formapplication/features/homeScreen/screens/success_screen.dart';
 import 'package:formapplication/features/homeScreen/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
-  List dropitems = [
+  List<String> dropitems = [
     "Leave Application",
     "Docment Request",
     "Accound Opening-Bank Letter",
     "Resignation Letter",
   ];
   String radioResult = "individual";
+  String dropdownSerchFielHint = "-Select Requset Type-";
   String? requestType;
   DateTime? date;
   FilePickerResult? file;
   TextEditingController behalfController = TextEditingController();
+  TextEditingController reQuestTypeController = TextEditingController();
   TextEditingController subFeild1Controller = TextEditingController();
   TextEditingController subFeild2Controller = TextEditingController();
   TextEditingController purposeController = TextEditingController();
@@ -28,81 +34,105 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 226, 209, 255),
-        leading: const Icon(Icons.arrow_back),
-        title: const Text("HR Request Form"),
-      ),
-      backgroundColor: const Color.fromARGB(255, 226, 209, 255),
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          child: SingleChildScrollView(
-            child: BlocConsumer<FormBlocBloc, FormBlocState>(
-              listener: (BuildContext context, FormBlocState state) {
-                if (state is FormValidationFailedState) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    mySnackbar(state),
-                  );
-                }
-                if (state is FormValidationSuccessState) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const SuccessScreen()));
-                }
-              },
-              builder: (context, state) {
-                return Container(
+    return DefaultTabController(
+      length: 2,
+      child: Consumer<HomeScreenProvider>(
+        builder: (context, provider, child) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).primaryColor,
+              leading: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.white,
+              ),
+              title: myText(
+                  text: "HR Request Form", size: 20, color: Colors.white),
+              actions: const [
+                Icon(
+                  Icons.language,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 5,
+                )
+              ],
+              bottom: TabBar(
+                  dividerHeight: 8,
+                  labelPadding: EdgeInsets.zero,
+                  dividerColor: Colors.white,
+                  indicatorColor: Colors.transparent,
+                  tabs: [
+                    GestureDetector(
+                      onTap: () {
+                        provider.radioResult = "individual";
+                        context
+                            .read<FormBlocBloc>()
+                            .add(RadioButtonClickedEvent());
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        height: 50,
+                        width: MediaQuery.of(context).size.width / 2,
+                        decoration: BoxDecoration(
+                            color: radioResult == "individual"
+                                ? Colors.white
+                                : Theme.of(context).primaryColor,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20))),
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: myText(
+                              text: "Individual",
+                              size: 18,
+                              color: radioResult == "individual"
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.white,
+                            )),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        radioResult = "on behalf";
+                        context
+                            .read<FormBlocBloc>()
+                            .add(RadioButtonClickedEvent());
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        height: 50,
+                        width: MediaQuery.of(context).size.width / 2,
+                        decoration: BoxDecoration(
+                            color: radioResult == "individual"
+                                ? Theme.of(context).primaryColor
+                                : Colors.white,
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20))),
+                        child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: myText(
+                              text: "On Behalf Of",
+                              size: 18,
+                              color: radioResult == "individual"
+                                  ? Colors.white
+                                  : Theme.of(context).primaryColor,
+                            )),
+                      ),
+                    ),
+                  ]),
+            ),
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+                child: SingleChildScrollView(
+                    child: Container(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      mySpacer(height: 20),
-                      Container(
-                        height: 55,
-                        decoration: BoxDecoration(
-                            boxShadow: myShadow(),
-                            color: Colors.white,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-
-                        // radio section
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: 40,
-                              width: MediaQuery.of(context).size.width / 2 - 20,
-                              child: RadioListTile(
-                                  title: myText(text: "Individual", size: 15),
-                                  value: "individual",
-                                  groupValue: radioResult,
-                                  onChanged: (value) {
-                                    radioResult = value!;
-                                    context
-                                        .read<FormBlocBloc>()
-                                        .add(RadioButtonClickedEvent());
-                                  }),
-                            ),
-                            SizedBox(
-                              height: 40,
-                              width: MediaQuery.of(context).size.width / 2 - 20,
-                              child: RadioListTile(
-                                  title: myText(text: "On behalf", size: 15),
-                                  value: "on behalf",
-                                  groupValue: radioResult,
-                                  onChanged: (value) {
-                                    radioResult = value!;
-                                    context
-                                        .read<FormBlocBloc>()
-                                        .add(RadioButtonClickedEvent());
-                                  }),
-                            )
-                          ],
-                        ),
-                      ),
-
                       Visibility(
                         visible: radioResult == "on behalf" ? true : false,
                         child: Column(
@@ -115,47 +145,58 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       mySpacer(height: 20),
-
-                      // dropdown section
                       Container(
-                          padding: const EdgeInsets.only(top: 12, left: 7),
-                          height: 55,
-                          decoration: const BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Color.fromARGB(255, 223, 221, 221),
-                                    blurRadius: 3,
-                                    offset: Offset(-3, 3))
-                              ],
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          child: DropdownButtonFormField(
-                            decoration:
-                                const InputDecoration.collapsed(hintText: ''),
-                            hint: const Text(
-                              "    Request Type",
-                              style: TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color.fromARGB(255, 182, 182, 182)),
-                            ),
-                            items: dropitems.map((e) {
-                              return DropdownMenuItem(
-                                value: e,
-                                child: myText(
-                                  text: "    $e",
-                                  size: 18,
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              requestType = value.toString();
-                              context
-                                  .read<FormBlocBloc>()
-                                  .add(DropDownButtonClickedEvent());
-                            },
-                          )),
+                        height: 55,
+                        child: DropDownSearchField(
+                          textFieldConfiguration: TextFieldConfiguration(
+                            controller: reQuestTypeController,
+                            decoration: InputDecoration(
+                                labelText: "Select Requset Type",
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
+                                labelStyle: const TextStyle(
+                                    fontSize: 18, color: Colors.grey),
+                                suffixIcon: const Icon(
+                                    Icons.keyboard_arrow_down_rounded),
+                                border: const OutlineInputBorder(),
+                                hintText: dropdownSerchFielHint,
+                                hintStyle: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.normal,
+                                    color: dropdownSerchFielHint ==
+                                            "-Select Requset Type-"
+                                        ? Colors.grey
+                                        : Colors.black)),
+                          ),
+                          displayAllSuggestionWhenTap: true,
+                          suggestionsCallback: (String pattern) {
+                            return dropitems.where((element) => element
+                                .toUpperCase()
+                                .contains(pattern.toUpperCase()));
+                          },
+                          itemBuilder: (BuildContext context, itemData) {
+                            return Container(
+                              padding: const EdgeInsets.only(left: 8),
+                              height: 45,
+                              child: Text(
+                                itemData,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            );
+                          },
+                          onSuggestionSelected: (Object? suggestion) {
+                            dropdownSerchFielHint = suggestion.toString();
+
+                            reQuestTypeController.text = suggestion.toString();
+                            requestType = suggestion.toString();
+                            context
+                                .read<FormBlocBloc>()
+                                .add(DropDownButtonClickedEvent());
+                          },
+                        ),
+                      ),
+                      // dropdown section
+
                       mySpacer(height: 20),
 
                       Builder(builder: (context) {
@@ -187,7 +228,7 @@ class HomeScreen extends StatelessWidget {
                         }
                         return const SizedBox();
                       }),
-
+                      // datepicker section
                       GestureDetector(
                         onTap: () async {
                           var res = await showCalendarDatePicker2Dialog(
@@ -206,28 +247,52 @@ class HomeScreen extends StatelessWidget {
                                 .add(CalenderButtonClickedEvent());
                           }
                         },
-                        // datepicker section
-                        child: Container(
-                          height: 55,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              boxShadow: myShadow(),
-                              color: Colors.white,
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(20))),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: SizedBox(
+                          height: 66,
+                          child: Stack(
                             children: [
-                              myText(
-                                  text: date == null
-                                      ? "  Required Date"
-                                      : "   ${date!.day}/${date!.month}/${date!.year}",
-                                  size: 19,
-                                  color:
-                                      const Color.fromARGB(255, 182, 182, 182),
-                                  fontWeight: FontWeight.w600),
-                              const Icon(Icons.calendar_month)
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  height: 55,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          color: const Color.fromARGB(
+                                              255, 117, 117, 117)),
+                                      color: Colors.white,
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(4))),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      myText(
+                                          text: date == null
+                                              ? "-Select Required Date-"
+                                              : "${date!.day}/${date!.month}/${date!.year}",
+                                          size: 18,
+                                          color: date == null
+                                              ? const Color.fromARGB(
+                                                  255, 182, 182, 182)
+                                              : Colors.black,
+                                          fontWeight: FontWeight.w600),
+                                      const Icon(Icons.calendar_month)
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(left: 10),
+                                color: Colors.white,
+                                child: const Text(
+                                  "  Select Required Date",
+                                  style: TextStyle(
+                                      fontSize: 13.5, color: Colors.grey),
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -262,10 +327,10 @@ class HomeScreen extends StatelessWidget {
                               },
                               child: Container(
                                 height: 50,
-                                decoration: const BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(10))),
                                 child: Center(
                                   child: myText(
                                       text: "Browse File",
@@ -288,69 +353,107 @@ class HomeScreen extends StatelessWidget {
                                             .read<FormBlocBloc>()
                                             .add(DropDownButtonClickedEvent());
                                       },
-                                      icon: const Icon(
+                                      icon: Icon(
                                         Icons.cancel,
                                         size: 23,
-                                        color: Colors.red,
+                                        color: Theme.of(context).primaryColor,
                                       ))
                                 ],
                               ),
                             ),
                       mySpacer(height: 20),
                       Container(
-                        padding: const EdgeInsets.only(left: 10),
-                        decoration: BoxDecoration(
-                            boxShadow: myShadow(),
-                            color: Colors.white,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
                         child: TextField(
                           controller: remarksController,
                           minLines: 2,
                           maxLines: 3,
                           decoration: const InputDecoration(
-                              hintText: "  Remarks",
-                              border: InputBorder.none,
-                              hintStyle: TextStyle(
-                                  fontSize: 19,
-                                  color: Color.fromARGB(255, 182, 182, 182))),
+                              floatingLabelBehavior:
+                                  FloatingLabelBehavior.always,
+                              hintText: "Remarks",
+                              labelText: "Remarks",
+                              labelStyle: const TextStyle(
+                                  fontSize: 18, color: Colors.grey),
+                              border: OutlineInputBorder(),
+                              hintStyle:
+                                  TextStyle(fontSize: 18, color: Colors.grey)),
                         ),
                       ),
                       mySpacer(height: 20),
                       // submit section
-                      GestureDetector(
-                        onTap: () {
-                          context.read<FormBlocBloc>().add(
-                              SubmitButtonClickedEvent(
-                                  selectedType: radioResult,
-                                  date: date,
-                                  file: file,
-                                  behalfController: behalfController.text,
-                                  purpose: purposeController.text,
-                                  remark: remarksController.text,
-                                  requestType: requestType,
-                                  subText1: subFeild1Controller.text,
-                                  subText2: subFeild2Controller.text));
-                        },
-                        child: Container(
-                          height: 50,
-                          decoration: const BoxDecoration(
-                              color: Colors.black,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          child: Center(
-                            child: myText(
-                                text: "Submit", size: 20, color: Colors.white),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              radioResult = "individual";
+                              dropdownSerchFielHint = "-Select Requset Type-";
+                              requestType = null;
+                              date = null;
+                              file = null;
+                              behalfController.clear();
+                              subFeild1Controller.clear();
+                              subFeild2Controller.clear();
+                              purposeController.clear();
+                              reQuestTypeController.clear();
+                              remarksController.clear();
+                              context
+                                  .read<FormBlocBloc>()
+                                  .add(RadioButtonClickedEvent());
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 2 - 40,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10))),
+                              child: Center(
+                                child: myText(
+                                    text: "Clear",
+                                    size: 20,
+                                    color: Colors.white),
+                              ),
+                            ),
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: () {
+                              context.read<FormBlocBloc>().add(
+                                  SubmitButtonClickedEvent(
+                                      selectedType: radioResult,
+                                      date: date,
+                                      file: file,
+                                      behalfController: behalfController.text,
+                                      purpose: purposeController.text,
+                                      remark: remarksController.text,
+                                      requestType: requestType,
+                                      subText1: subFeild1Controller.text,
+                                      subText2: subFeild2Controller.text));
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 2 - 40,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context).primaryColor,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10))),
+                              child: Center(
+                                child: myText(
+                                    text: "Submit",
+                                    size: 20,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                );
-              },
+                )),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

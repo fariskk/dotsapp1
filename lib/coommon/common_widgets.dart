@@ -8,8 +8,12 @@ Text myText(
     FontWeight? fontWeight}) {
   return Text(
     text,
+    overflow: TextOverflow.ellipsis,
     style: GoogleFonts.openSans(
-        color: color, fontSize: size, fontWeight: fontWeight),
+      color: color,
+      fontSize: size,
+      fontWeight: fontWeight,
+    ),
   );
 }
 

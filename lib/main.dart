@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => FormBlocBloc(),
       child: MaterialApp(
+        theme: ThemeData(primaryColor: const Color.fromARGB(255, 179, 33, 23)),
         debugShowCheckedModeBanner: false,
         home: HomeScreen(),
       ),
