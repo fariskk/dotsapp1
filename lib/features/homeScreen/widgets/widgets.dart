@@ -4,8 +4,13 @@ import 'package:formapplication/coommon/common_widgets.dart';
 import 'package:formapplication/features/homeScreen/provider/home_screen_provider.dart';
 import 'package:provider/provider.dart';
 
-Container myTextField(
-    {required hintText, required TextEditingController controller}) {
+Container myTextField({
+  required hintText,
+  required TextEditingController controller,
+  required BuildContext context,
+  int? minLines,
+  int? maxLines,
+}) {
   return Container(
     height: 55,
     decoration: const BoxDecoration(
@@ -13,12 +18,13 @@ Container myTextField(
         borderRadius: BorderRadius.all(Radius.circular(20))),
     child: Center(
       child: TextField(
+        style: const TextStyle(fontSize: 18),
         controller: controller,
         decoration: InputDecoration(
             floatingLabelBehavior: FloatingLabelBehavior.always,
             focusedBorder: const OutlineInputBorder(),
-            hintText: hintText,
-            labelText: hintText,
+            hintText: getText(hintText, context),
+            labelText: getText(hintText, context),
             border: const OutlineInputBorder(),
             labelStyle: const TextStyle(fontSize: 18, color: Colors.grey),
             hintStyle: const TextStyle(fontSize: 18, color: Colors.grey)),

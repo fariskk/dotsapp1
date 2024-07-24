@@ -1,9 +1,11 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:formapplication/coommon/common_widgets.dart';
 import 'package:formapplication/features/homeScreen/screens/success_screen.dart';
 import 'package:formapplication/features/homeScreen/widgets/widgets.dart';
 
 class HomeScreenProvider extends ChangeNotifier {
+  var language = Languages.english;
   List<String> dropitems = [
     "Leave Application",
     "Docment Request",

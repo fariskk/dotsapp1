@@ -25,12 +25,39 @@ class HomeScreen extends StatelessWidget {
               ),
               title: myText(
                   text: "HR Request Form", size: 20, color: Colors.white),
-              actions: const [
-                Icon(
-                  Icons.language,
-                  color: Colors.white,
-                ),
-                SizedBox(
+              actions: [
+                PopupMenuButton(
+                    icon: Icon(
+                      Icons.language,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          child: Text("English"),
+                          onTap: () {
+                            provider.language = Languages.english;
+                            provider.rebuild();
+                          },
+                        ),
+                        PopupMenuItem(
+                          child: Text("Arabic"),
+                          onTap: () {
+                            provider.language = Languages.arabic;
+                            provider.rebuild();
+                          },
+                        ),
+                        PopupMenuItem(
+                          child: Text("Hindi"),
+                          onTap: () {
+                            provider.language = Languages.hindi;
+                            provider.rebuild();
+                          },
+                        ),
+                      ];
+                    }),
+                const SizedBox(
                   width: 5,
                 )
               ],
@@ -59,8 +86,9 @@ class HomeScreen extends StatelessWidget {
                           children: [
                             mySpacer(height: 20),
                             myTextField(
-                                hintText: "Behalf of",
-                                controller: provider.behalfController),
+                                hintText: getText("Behalf of", context),
+                                controller: provider.behalfController,
+                                context: context),
                           ],
                         ),
                       ),
@@ -71,7 +99,8 @@ class HomeScreen extends StatelessWidget {
                           textFieldConfiguration: TextFieldConfiguration(
                             controller: provider.reQuestTypeController,
                             decoration: InputDecoration(
-                                labelText: "Select Requset Type",
+                                labelText:
+                                    getText("Select Requset Type", context),
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 labelStyle: const TextStyle(
@@ -79,7 +108,8 @@ class HomeScreen extends StatelessWidget {
                                 suffixIcon: const Icon(
                                     Icons.keyboard_arrow_down_rounded),
                                 border: const OutlineInputBorder(),
-                                hintText: provider.dropdownSerchFielHint,
+                                hintText: getText(
+                                    provider.dropdownSerchFielHint, context),
                                 hintStyle: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.normal,
@@ -126,7 +156,8 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 myTextField(
                                     hintText: "Document Name",
-                                    controller: provider.subFeild1Controller),
+                                    controller: provider.subFeild1Controller,
+                                    context: context),
                                 mySpacer(height: 20),
                               ],
                             );
@@ -135,11 +166,13 @@ class HomeScreen extends StatelessWidget {
                               children: [
                                 myTextField(
                                     hintText: "Name of the Institustion",
-                                    controller: provider.subFeild1Controller),
+                                    controller: provider.subFeild1Controller,
+                                    context: context),
                                 mySpacer(height: 20),
                                 myTextField(
                                     hintText: "Address of the Institustion",
-                                    controller: provider.subFeild2Controller),
+                                    controller: provider.subFeild2Controller,
+                                    context: context),
                                 mySpacer(height: 20),
                               ],
                             );
@@ -189,7 +222,9 @@ class HomeScreen extends StatelessWidget {
                                     children: [
                                       myText(
                                           text: provider.date == null
-                                              ? "-Select Required Date-"
+                                              ? getText(
+                                                  "-Select Required Date-",
+                                                  context)
                                               : "${provider.date!.day}/${provider.date!.month}/${provider.date!.year}",
                                           size: 18,
                                           color: provider.date == null
@@ -205,9 +240,9 @@ class HomeScreen extends StatelessWidget {
                               Container(
                                 margin: const EdgeInsets.only(left: 10),
                                 color: Colors.white,
-                                child: const Text(
-                                  "  Select Required Date",
-                                  style: TextStyle(
+                                child: Text(
+                                  getText("Select Required Date", context),
+                                  style: const TextStyle(
                                       fontSize: 13.5, color: Colors.grey),
                                 ),
                               )
@@ -219,7 +254,8 @@ class HomeScreen extends StatelessWidget {
                       // textarea 3
                       myTextField(
                           hintText: "Purpose",
-                          controller: provider.purposeController),
+                          controller: provider.purposeController,
+                          context: context),
                       mySpacer(height: 20),
                       Row(
                         children: [
@@ -283,20 +319,13 @@ class HomeScreen extends StatelessWidget {
                               ),
                             ),
                       mySpacer(height: 20),
-                      TextField(
-                        controller: provider.remarksController,
-                        minLines: 2,
-                        maxLines: 3,
-                        decoration: const InputDecoration(
-                            floatingLabelBehavior: FloatingLabelBehavior.always,
-                            hintText: "Remarks",
-                            labelText: "Remarks",
-                            labelStyle:
-                                TextStyle(fontSize: 18, color: Colors.grey),
-                            border: OutlineInputBorder(),
-                            hintStyle:
-                                TextStyle(fontSize: 18, color: Colors.grey)),
-                      ),
+                      myTextField(
+                          hintText: "Remarks",
+                          controller: provider.remarksController,
+                          context: context,
+                          minLines: 2,
+                          maxLines: 3),
+
                       mySpacer(height: 20),
                       // submit section
                       Row(
