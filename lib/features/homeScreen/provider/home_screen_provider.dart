@@ -1,23 +1,37 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:formapplication/coommon/common_widgets.dart';
+
 import 'package:formapplication/features/homeScreen/screens/success_screen.dart';
 import 'package:formapplication/features/homeScreen/widgets/widgets.dart';
+import 'package:formapplication/models/request_model.dart';
 
 class HomeScreenProvider extends ChangeNotifier {
-  var language = Languages.english;
+  String myName = "muhammed faris kk";
+  Locale language = const Locale("en");
   List<String> dropitems = [
     "Leave Application",
     "Docment Request",
     "Accound Opening-Bank Letter",
     "Resignation Letter",
   ];
+  List<String> employees = [
+    "Shukur kk",
+    "Fasal",
+    "Farhana Sherin",
+    "Safiyya",
+    "muhammed faris kk"
+  ];
+  String? selectedEmployees;
   String radioResult = "individual";
   String dropdownSerchFielHint = "-Select Requset Type-";
   String? requestType;
   DateTime? date;
   FilePickerResult? file;
-  TextEditingController behalfController = TextEditingController();
+  bool isLoading = false;
   TextEditingController reQuestTypeController = TextEditingController();
   TextEditingController subFeild1Controller = TextEditingController();
   TextEditingController subFeild2Controller = TextEditingController();
@@ -29,8 +43,8 @@ class HomeScreenProvider extends ChangeNotifier {
 
   void submit(BuildContext context) {
     {
-      if (radioResult == "on behalf" && behalfController.text == "") {
-        mySnackbar("Please Fill the Name of Person", context);
+      if (radioResult == "on behalf" && selectedEmployees == null) {
+        mySnackbar("Please Select a Employee", context);
       } else if (requestType == null) {
         mySnackbar("Select Your request type", context);
       } else if (subFeild1Controller.text == "" &&
@@ -49,10 +63,67 @@ class HomeScreenProvider extends ChangeNotifier {
       } else if (purposeController.text == "") {
         mySnackbar("Please fill your Purpose", context);
       } else {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const SuccessScreen()));
+        submitForm(context);
       }
     }
+  }
+
+  void submitForm(BuildContext context) async {
+    isLoading = true;
+    rebuild();
+    final fir = FirebaseFirestore.instance
+        .collection(radioResult == "individual" ? myName : selectedEmployees!);
+
+    List fileUrls = [];
+    final storage = FirebaseStorage.instance.ref(
+        "files/${radioResult == "individual" ? myName : selectedEmployees}");
+    if (file != null) {
+      for (var fileToUpload in file!.files) {
+        await storage
+            .child(fileToUpload.name)
+            .putFile(File(fileToUpload.path!));
+        fileUrls.add({
+          "name": fileToUpload.name,
+          "url": await storage.child(fileToUpload.name).getDownloadURL()
+        });
+      }
+    }
+    final now = DateTime.now();
+    String docId = now.toString();
+    Map<String, dynamic> dataToStore = RequestModel(
+            requestId: docId,
+            requestedBy: myName,
+            requestdFor:
+                radioResult == "individual" ? myName : selectedEmployees!,
+            requestType: requestType!,
+            date: Date(
+                day: date!.day.toString(),
+                month: date!.month.toString(),
+                year: date!.year.toString()),
+            purpose: purposeController.text,
+            files: fileUrls,
+            remarks: remarksController.text,
+            documentName: requestType == "Docment Request"
+                ? subFeild1Controller.text
+                : "",
+            nameOfTheInstitution: subFeild1Controller.text,
+            addressOfTheInstitution: subFeild2Controller.text,
+            status: "requested",
+            requestedDate: RequestedDate(
+                day: now.day.toString(),
+                month: now.month.toString(),
+                year: now.year.toString()))
+        .toJson();
+    fir.doc(docId).set(dataToStore);
+    final requests = FirebaseFirestore.instance.collection("requests");
+    AggregateQuerySnapshot query = await requests.count().get();
+
+    requests.doc(docId).set(dataToStore);
+    isLoading = false;
+    rebuild();
+    // ignore: use_build_context_synchronously
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const SuccessScreen()));
   }
 
   void clearForm() {
@@ -61,7 +132,7 @@ class HomeScreenProvider extends ChangeNotifier {
     requestType = null;
     date = null;
     file = null;
-    behalfController.clear();
+    selectedEmployees = null;
     subFeild1Controller.clear();
     subFeild2Controller.clear();
     purposeController.clear();
