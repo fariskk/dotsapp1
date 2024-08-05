@@ -28,7 +28,7 @@ class PdfGenarator {
         .asUint8List();
     Document pdf = Document();
     pdf.addPage(Page(
-        margin: EdgeInsets.symmetric(horizontal: 50),
+        margin: const EdgeInsets.symmetric(horizontal: 50),
         build: (context) {
           return Container(
               child: Column(children: [
@@ -38,7 +38,7 @@ class PdfGenarator {
                   children: [
                     Container(
                         color: PdfColors.amber,
-                        margin: EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
                         height: 100,
                         width: 100,
                         child: Image(
@@ -46,7 +46,7 @@ class PdfGenarator {
                         )),
                     Container(
                         color: PdfColors.amber,
-                        margin: EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
                         height: 35,
                         width: 35,
                         child: Image(
@@ -54,7 +54,7 @@ class PdfGenarator {
                         )),
                     Container(
                         color: PdfColors.amber,
-                        margin: EdgeInsets.all(5),
+                        margin: const EdgeInsets.all(5),
                         height: 40,
                         width: 40,
                         child: Image(
@@ -130,54 +130,63 @@ class PdfGenarator {
   }
 
   static genarateSalaryTransferPdf(
-      String requestedDate, RequestModel request) async {
-    String img1 =
-        "https://firebasestorage.googleapis.com/v0/b/dotsapp1-e4e78.appspot.com/o/pdfimages%2FScreenshot%202024-08-04%20211736.png?alt=media&token=1d5cfe05-9851-4726-b116-3725bd0ccd71";
-    String img2 =
-        "https://firebasestorage.googleapis.com/v0/b/dotsapp1-e4e78.appspot.com/o/pdfimages%2FScreenshot%202024-08-04%20211811.png?alt=media&token=889bb46d-eae5-4807-9a08-5e5ca24bddda";
-
+      {required String requestedDate,
+      required RequestModel request,
+      required String signUrl,
+      required String img1,
+      required String img2,
+      required String img3}) async {
     Uint8List bytes1 = (await NetworkAssetBundle(Uri.parse(img1)).load(img1))
         .buffer
         .asUint8List();
     Uint8List bytes2 = (await NetworkAssetBundle(Uri.parse(img2)).load(img2))
         .buffer
         .asUint8List();
-    Uint8List? sign;
-    if (request.files.isNotEmpty) {
-      sign = (await NetworkAssetBundle(Uri.parse(request.files.first["url"]))
-              .load(request.files.first["url"]))
-          .buffer
-          .asUint8List();
-    }
+    Uint8List? bytes3 = (await NetworkAssetBundle(Uri.parse(img3)).load(img3))
+        .buffer
+        .asUint8List();
+    Uint8List sign =
+        (await NetworkAssetBundle(Uri.parse(signUrl)).load(signUrl))
+            .buffer
+            .asUint8List();
+
     Document pdf = Document();
     pdf.addPage(Page(
-        margin: EdgeInsets.symmetric(horizontal: 30),
+        margin: const EdgeInsets.symmetric(horizontal: 40),
         build: (context) {
           return Container(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Header(
-                  margin: EdgeInsets.symmetric(vertical: 20),
+                  margin: const EdgeInsets.symmetric(vertical: 20),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
                             color: PdfColors.amber,
-                            margin: EdgeInsets.all(5),
-                            height: 100,
+                            margin: const EdgeInsets.all(5),
+                            height: 60,
                             width: 100,
-                            child: Image(
-                              MemoryImage(bytes1),
-                            )),
-                        Container(
-                            color: PdfColors.amber,
-                            margin: EdgeInsets.all(5),
-                            height: 110,
-                            width: 110,
-                            child: Image(
-                              MemoryImage(bytes2),
-                            ))
+                            child: Image(MemoryImage(bytes1),
+                                fit: BoxFit.contain)),
+                        Row(children: [
+                          Container(
+                              color: PdfColors.amber,
+                              margin: const EdgeInsets.all(5),
+                              height: 60,
+                              width: 100,
+                              child: Image(MemoryImage(bytes3),
+                                  fit: BoxFit.contain)),
+                          SizedBox(width: 5),
+                          Container(
+                              color: PdfColors.amber,
+                              margin: const EdgeInsets.all(5),
+                              height: 60,
+                              width: 100,
+                              child: Image(MemoryImage(bytes2),
+                                  fit: BoxFit.contain))
+                        ]),
                       ]),
                 ),
                 SizedBox(height: 20),
@@ -185,11 +194,11 @@ class PdfGenarator {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Ref : 1258",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                           )),
                       Text(requestedDate,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                           )),
                     ]),
@@ -227,36 +236,32 @@ class PdfGenarator {
                       ])
                 ]),
                 SizedBox(height: 20),
-                sign != null
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                            Container(
-                                color: PdfColors.amber,
-                                height: 80,
-                                width: 160,
-                                child: Image(
-                                  MemoryImage(sign),
-                                )),
-                            SizedBox(height: 10),
-                            myPdfText(text: "Dr.Amal Almesafr"),
-                            SizedBox(height: 10),
-                            myPdfText(text: "Director HC & Support Services"),
-                          ])
-                    : SizedBox(),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Container(
+                      color: PdfColors.amber,
+                      height: 60,
+                      width: 120,
+                      child: Image(MemoryImage(sign), fit: BoxFit.contain)),
+                  SizedBox(height: 10),
+                  myPdfText(text: "Dr.Amal Almesafr"),
+                  SizedBox(height: 10),
+                  myPdfText(text: "Director HC & Support Services"),
+                ]),
                 Expanded(child: SizedBox()),
                 myPdfText(text: "This is a System-genarated Document"),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
                 SizedBox(
                     child: Column(children: [
                   Divider(thickness: .5, indent: 60, endIndent: 60),
                   SizedBox(height: 10),
                   Text(
-                      "Dots acdemy,Mukkam,Kozhikode,kerala | Tel +91 8921914641",
-                      style: TextStyle(fontSize: 8)),
-                  Text("www.DotsAcademy.com", style: TextStyle(fontSize: 8))
+                      "P.O.Box:54227,RAKEZ,U.A.E,|Tel:+971 72434610/11||Fax:+971 72434612",
+                      style: const TextStyle(fontSize: 9)),
+                  Text(
+                      "infp@uticome.com|Wbsite: www.uticom.com|www.mb-group.com",
+                      style: const TextStyle(fontSize: 9))
                 ])),
-                SizedBox(height: 40)
+                SizedBox(height: 50)
               ]));
         }));
     final dir = await getExternalStorageDirectory();
@@ -272,7 +277,7 @@ Widget myPdfText(
     double fontsize = 12,
     double? width}) {
   return SizedBox(
-      width: width ?? PageTheme().pageFormat.availableWidth,
+      width: 540,
       child: Text(text,
           overflow: TextOverflow.span,
           style: TextStyle(

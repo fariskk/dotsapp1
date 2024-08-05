@@ -249,7 +249,13 @@ class AdminScreen extends StatelessWidget {
                                     "Salary Transfer") {
                                   File file = await PdfGenarator
                                       .genarateSalaryTransferPdf(
-                                          reqDate, request);
+                                          requestedDate: reqDate,
+                                          request: request,
+                                          signUrl: request.files[0]["url"],
+                                          img1: request.files[1]["url"],
+                                          img2: request.files[2]["url"],
+                                          img3: request.files[3]["url"]);
+                                  // ignore: use_build_context_synchronously
                                   openFileSnackbar(context, file);
                                 }
                               },
