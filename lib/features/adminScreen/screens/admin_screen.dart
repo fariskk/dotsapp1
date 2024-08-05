@@ -1,14 +1,19 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:formapplication/coommon/common.dart';
 import 'package:formapplication/features/adminScreen/provider/admin_provider.dart';
+import 'package:formapplication/features/adminScreen/widgets/admin_widgets.dart';
 import 'package:formapplication/features/homeScreen/provider/home_screen_provider.dart';
 import 'package:formapplication/features/homeScreen/widgets/widgets.dart';
 import 'package:formapplication/features/login/screens/landing_screen.dart';
 import 'package:formapplication/features/myRequestsScreen/widgets/my_requsts_widgets.dart';
 import 'package:formapplication/models/request_model.dart';
+import 'package:formapplication/utils/pdf_genarator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 
 class AdminScreen extends StatelessWidget {
@@ -46,12 +51,13 @@ class AdminScreen extends StatelessWidget {
         builder: (context, AsyncSnapshot snapshot) {
           if (snapshot.hasData) {
             final data = snapshot.data;
-
+            List listData = data.docs;
+            listData = listData.reversed.toList();
             return ListView.builder(
-                itemCount: data.docs.length,
+                itemCount: listData.length,
                 itemBuilder: (context, index) {
                   RequestModel request =
-                      RequestModel.fromJson(data.docs[index].data());
+                      RequestModel.fromJson(listData[index].data());
                   return Container(
                     margin: const EdgeInsets.all(20),
                     padding: const EdgeInsets.all(10),
@@ -102,7 +108,41 @@ class AdminScreen extends StatelessWidget {
                                 color: getColordText(request.status))
                           ],
                         ),
-                        Divider(),
+                        Visibility(
+                          child: Column(
+                            children: [
+                              const Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  myText(
+                                      text: getText("Amount", context),
+                                      size: 18),
+                                  myText(
+                                    text: "\$${request.amount}",
+                                    size: 18,
+                                  )
+                                ],
+                              ),
+                              const Divider(),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  myText(
+                                      text: getText("Account Number", context),
+                                      size: 18),
+                                  myText(
+                                    text: request.acountNumber,
+                                    size: 18,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -165,23 +205,19 @@ class AdminScreen extends StatelessWidget {
                               style: GoogleFonts.workSans(fontSize: 18),
                             )),
                         MaterialButton(
+                          onPressed: () {},
+                          color: Theme.of(context).primaryColor,
+                          minWidth: double.infinity,
                           child: myText(
                               text: getText("Download Attached Files", context),
                               size: 17,
                               color: Colors.white),
-                          onPressed: () {},
-                          color: Theme.of(context).primaryColor,
-                          minWidth: double.infinity,
                         ),
                         const Divider(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             MaterialButton(
-                              child: myText(
-                                  text: getText("Reject", context),
-                                  size: 17,
-                                  color: Colors.white),
                               onPressed: () {
                                 Provider.of<AdminProvider>(context,
                                         listen: false)
@@ -190,20 +226,40 @@ class AdminScreen extends StatelessWidget {
                               color: Theme.of(context).primaryColor,
                               minWidth:
                                   MediaQuery.of(context).size.width / 2 - 50,
-                            ),
-                            MaterialButton(
                               child: myText(
-                                  text: getText("Approve", context),
+                                  text: getText("Reject", context),
                                   size: 17,
                                   color: Colors.white),
-                              onPressed: () {
+                            ),
+                            MaterialButton(
+                              onPressed: () async {
                                 Provider.of<AdminProvider>(context,
                                         listen: false)
                                     .approve(request);
+                                String reqDate =
+                                    "${request.requestedDate.day}-${getMountText(request.requestedDate.month)}-${request.requestedDate.year}";
+
+                                if (request.requestType ==
+                                    "Resignation Letter") {
+                                  File file =
+                                      await PdfGenarator.genarateResignationPdf(
+                                          reqDate, request.requestdFor);
+                                  openFileSnackbar(context, file);
+                                } else if (request.requestType ==
+                                    "Salary Transfer") {
+                                  File file = await PdfGenarator
+                                      .genarateSalaryTransferPdf(
+                                          reqDate, request);
+                                  openFileSnackbar(context, file);
+                                }
                               },
                               color: Colors.green,
                               minWidth:
                                   MediaQuery.of(context).size.width / 2 - 50,
+                              child: myText(
+                                  text: getText("Approve", context),
+                                  size: 17,
+                                  color: Colors.white),
                             ),
                           ],
                         )
@@ -219,4 +275,34 @@ class AdminScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String getMountText(String monunt) {
+  switch (monunt) {
+    case "1":
+      return "January";
+    case "2":
+      return "February";
+    case "3":
+      return "March";
+    case "4":
+      return "April";
+    case "5":
+      return "May";
+    case "6":
+      return "June";
+    case "7":
+      return "July";
+    case "8":
+      return "August";
+    case "9":
+      return "September";
+    case "10":
+      return "October";
+    case "11":
+      return "November";
+    case "12":
+      return "December";
+  }
+  return "";
 }

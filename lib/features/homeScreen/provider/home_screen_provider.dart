@@ -17,6 +17,7 @@ class HomeScreenProvider extends ChangeNotifier {
     "Docment Request",
     "Accound Opening-Bank Letter",
     "Resignation Letter",
+    "Salary Transfer"
   ];
   List<String> employees = [
     "Shukur kk",
@@ -35,6 +36,8 @@ class HomeScreenProvider extends ChangeNotifier {
   TextEditingController reQuestTypeController = TextEditingController();
   TextEditingController subFeild1Controller = TextEditingController();
   TextEditingController subFeild2Controller = TextEditingController();
+  TextEditingController subFeild3Controller = TextEditingController();
+  TextEditingController subFeild4Controller = TextEditingController();
   TextEditingController purposeController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
   void rebuild() {
@@ -49,16 +52,34 @@ class HomeScreenProvider extends ChangeNotifier {
         mySnackbar("Select Your request type", context);
       } else if (subFeild1Controller.text == "" &&
           (requestType == "Docment Request" ||
-              requestType == "Accound Opening-Bank Letter")) {
+              requestType == "Accound Opening-Bank Letter" ||
+              requestType == "Salary Transfer")) {
         if (requestType == "Docment Request") {
           mySnackbar("Please fill Document Name", context);
+        } else if (requestType == "Salary Transfer") {
+          mySnackbar("Please fill Your Nationality", context);
         } else {
           mySnackbar("Please fill Name of Institution", context);
         }
-      } else if (subFeild2Controller.text == "" &&
-          requestType == "Accound Opening-Bank Letter") {
-        mySnackbar("Please fill Address of Institution", context);
-      } else if (date == null) {
+      }
+      //
+      else if (subFeild2Controller.text == "" &&
+          (requestType == "Accound Opening-Bank Letter" ||
+              requestType == "Salary Transfer")) {
+        if (requestType == "Accound Opening-Bank Letter") {
+          mySnackbar("Please fill Address of Institution", context);
+        } else {
+          mySnackbar("Please fill Passport Number", context);
+        }
+      } else if (subFeild3Controller.text == "" &&
+          requestType == "Salary Transfer") {
+        mySnackbar("Please fill Amount", context);
+      } else if (subFeild4Controller.text == "" &&
+          requestType == "Salary Transfer") {
+        mySnackbar("Please fill Account Number", context);
+      }
+      //
+      else if (date == null) {
         mySnackbar("Select Your Required Date", context);
       } else if (purposeController.text == "") {
         mySnackbar("Please fill your Purpose", context);
@@ -112,7 +133,11 @@ class HomeScreenProvider extends ChangeNotifier {
             requestedDate: RequestedDate(
                 day: now.day.toString(),
                 month: now.month.toString(),
-                year: now.year.toString()))
+                year: now.year.toString()),
+            nationality: subFeild1Controller.text,
+            passportNumber: subFeild2Controller.text,
+            amount: subFeild3Controller.text,
+            acountNumber: subFeild4Controller.text)
         .toJson();
     fir.doc(docId).set(dataToStore);
     final requests = FirebaseFirestore.instance.collection("requests");

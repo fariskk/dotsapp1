@@ -97,6 +97,14 @@ String getText(String name, BuildContext context) {
       return language.reject;
     case "Approve":
       return language.approve;
+    case "Account Number":
+      return language.accountNumber;
+    case "Amount":
+      return language.amount;
+    case "Passport Number":
+      return language.passportNumber;
+    case "Your Nationality":
+      return language.yourNationality;
     default:
       return "error";
   }

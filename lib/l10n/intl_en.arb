@@ -26,12 +26,16 @@
     "addFile":"Add File",
     "requestedBy":"Req.By",
     "requestedFor":"Req.For",
-    "status":"",
+    "status":"Status",
     "requiredDate":"Required Date",
     "requestedDate":"Requested Date",
     "downloadAttachedFiles":"Download Attached Files",
     "requestedDocument":"Requested Document",
     "reject":"Reject",
-    "approve":"Approve"
-   
+    "approve":"Approve",
+    "yourNationality":"Your Nationality",
+    "passportNumber":"Passport Number",
+    "amount":"Amount",
+    "accountNumber":"Account Number",
+    "accountNumber":"Acc.Number"
   }

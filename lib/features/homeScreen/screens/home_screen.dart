@@ -106,6 +106,35 @@ class HomeScreen extends StatelessWidget {
                                         mySpacer(height: 20),
                                       ],
                                     );
+                                  case "Salary Transfer":
+                                    return Column(
+                                      children: [
+                                        myTextField(
+                                            hintText: "Your Nationality",
+                                            controller:
+                                                provider.subFeild1Controller,
+                                            context: context),
+                                        mySpacer(height: 20),
+                                        myTextField(
+                                            hintText: "Passport Number",
+                                            controller:
+                                                provider.subFeild2Controller,
+                                            context: context),
+                                        mySpacer(height: 20),
+                                        myTextField(
+                                            hintText: "Amount",
+                                            controller:
+                                                provider.subFeild3Controller,
+                                            context: context),
+                                        mySpacer(height: 20),
+                                        myTextField(
+                                            hintText: "Account Number",
+                                            controller:
+                                                provider.subFeild4Controller,
+                                            context: context),
+                                        mySpacer(height: 20),
+                                      ],
+                                    );
                                   default:
                                     const Text("no data");
                                 }

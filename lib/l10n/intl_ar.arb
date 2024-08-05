@@ -32,6 +32,9 @@
     "downloadAttachedFiles":"تنزيل الملفات المرفقة",
     "requestedDocument":"الوثيقة المطلوبة",
     "reject":"يرفض",
-    "approve":"يعتمد"
-   
+    "approve":"يعتمد",
+    "yourNationality":"جنسيتك",
+    "passportNumber":"رقم جواز السفر",
+    "amount":"كمية",
+    "accountNumber":"رقم حساب" 
   }

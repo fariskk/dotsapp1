@@ -32,6 +32,10 @@
     "downloadAttachedFiles":"संलग्न फ़ाइलें डाउनलोड करें",
     "requestedDocument":"अनुरोधित दस्तावेज़",
    "reject":"अस्वीकार करना",
-    "approve":"मंज़ूरी देना"
+    "approve":"मंज़ूरी देना",
+    "yourNationality":"आपकी राष्ट्रीयता",
+    "passportNumber":"पासपोर्ट संख्या",
+    "amount":"मात्रा",
+    "accountNumber":"खाता संख्या"
    
   }
