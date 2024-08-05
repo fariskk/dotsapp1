@@ -241,12 +241,16 @@ class AdminScreen extends StatelessWidget {
 
                                 if (request.requestType ==
                                     "Resignation Letter") {
+                                  mySnackbar(
+                                      "File Being Prepared....", context);
                                   File file =
                                       await PdfGenarator.genarateResignationPdf(
                                           reqDate, request.requestdFor);
                                   openFileSnackbar(context, file);
                                 } else if (request.requestType ==
                                     "Salary Transfer") {
+                                  mySnackbar(
+                                      "File Being Prepared....", context);
                                   File file = await PdfGenarator
                                       .genarateSalaryTransferPdf(
                                           requestedDate: reqDate,
