@@ -277,7 +277,7 @@ Widget myPdfText(
     double fontsize = 12,
     double? width}) {
   return SizedBox(
-      width: 540,
+      width: 520,
       child: Text(text,
           overflow: TextOverflow.span,
           style: TextStyle(

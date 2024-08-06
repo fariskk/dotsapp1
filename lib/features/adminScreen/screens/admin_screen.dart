@@ -251,14 +251,20 @@ class AdminScreen extends StatelessWidget {
                                     "Salary Transfer") {
                                   mySnackbar(
                                       "File Being Prepared....", context);
+                                  String logo1 =
+                                      "https://firebasestorage.googleapis.com/v0/b/dotsapp1-e4e78.appspot.com/o/files%2Fmuhammed%20faris%20kk%2FIMG_20240805_155631_308.jpg?alt=media&token=78826fa2-e7cf-45e1-bb9e-4f30fc57249e";
+                                  String logo2 =
+                                      "https://firebasestorage.googleapis.com/v0/b/dotsapp1-e4e78.appspot.com/o/files%2Fmuhammed%20faris%20kk%2FIMG_20240805_164412_627.jpg?alt=media&token=ecf1fcce-abb3-45ef-81c6-58c8e67847d9";
+                                  String logo3 =
+                                      "https://firebasestorage.googleapis.com/v0/b/dotsapp1-e4e78.appspot.com/o/files%2Fmuhammed%20faris%20kk%2FIMG_20240805_164412_697.jpg?alt=media&token=eeab9a1f-2e55-49f8-88ea-9c786703c787";
                                   File file = await PdfGenarator
                                       .genarateSalaryTransferPdf(
                                           requestedDate: reqDate,
                                           request: request,
                                           signUrl: request.files[0]["url"],
-                                          img1: request.files[1]["url"],
-                                          img2: request.files[2]["url"],
-                                          img3: request.files[3]["url"]);
+                                          img1: logo1,
+                                          img2: logo2,
+                                          img3: logo3);
                                   // ignore: use_build_context_synchronously
                                   openFileSnackbar(context, file);
                                 }
